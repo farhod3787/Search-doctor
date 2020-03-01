@@ -7,7 +7,7 @@ const adminRouter = require('./routes/admin');
 const userRouter = require('./routes/users'); 
 const hospitalRouter = require('./routes/hospitals');
 const departmentRouter = require('./routes/department');
-
+const doctorRouter = require('./routes/doctors');
 const cors = require("cors");
 const app = express();
 
@@ -58,6 +58,7 @@ app.use('/api/admin', adminRouter);
 app.use('/api/users/', userRouter); 
 app.use('/api/hospital/', hospitalRouter); 
 app.use('/api/department/', departmentRouter); 
+app.use('/api/doctor/', doctorRouter); 
 
 // app.get('/*', (req, res) => {
 //     res.sendFile(path.join(__dirname, '../dist/online-pharmacy', 'index.html'))
