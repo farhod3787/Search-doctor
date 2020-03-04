@@ -8,6 +8,8 @@ const userRouter = require('./routes/users');
 const hospitalRouter = require('./routes/hospitals');
 const departmentRouter = require('./routes/department');
 const doctorRouter = require('./routes/doctors');
+const nurseRouter = require('./routes/nurse');
+
 const cors = require("cors");
 const app = express();
 
@@ -59,6 +61,7 @@ app.use('/api/users/', userRouter);
 app.use('/api/hospital/', hospitalRouter); 
 app.use('/api/department/', departmentRouter); 
 app.use('/api/doctor/', doctorRouter); 
+app.use('/api/nurse/', nurseRouter); 
 
 // app.get('/*', (req, res) => {
 //     res.sendFile(path.join(__dirname, '../dist/online-pharmacy', 'index.html'))

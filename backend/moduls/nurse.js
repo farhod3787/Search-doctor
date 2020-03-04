@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 var jwt = require('jsonwebtoken');
 
-const doctorSchema = mongoose.Schema({
+const nurseSchema = mongoose.Schema({
     fullName: {type: String},
     phone: {type: String},
     address: {type: String},
@@ -15,13 +15,13 @@ const doctorSchema = mongoose.Schema({
     password: {type: String}
 });
 
-doctorSchema.statics.hashofPassword = function(pass) {
+nurseSchema.statics.hashofPassword = function(pass) {
     let password = {password: pass};
     let hashpass = jwt.sign(password, 'pro');
     return hashpass;
 }
 
-doctorSchema.statics.generateToken = function(login, password) {
+nurseSchema.statics.generateToken = function(login, password) {
     var value = {
         login: login,
         password: password
@@ -34,8 +34,8 @@ doctorSchema.statics.generateToken = function(login, password) {
 
 //                                                               K i r i  sh
 
-doctorSchema.statics.verifyUser = function(users, body) {
-    var object = {isDoctor : false};
+nurseSchema.statics.verifyUser = function(users, body) {
+    var object = {isnurse : false};
     var distoken = undefined; 
 
     users.forEach((user) => {
@@ -47,7 +47,7 @@ doctorSchema.statics.verifyUser = function(users, body) {
         }
         if (distoken) {
             if(user.login == body.login && distoken.password == body.password ) {
-                    object.isDoctor = true;
+                    object.isnurse = true;
                     object.token = jwt.sign({login: user.login, password: user.password}, 'pro')
             }
         }
@@ -58,12 +58,10 @@ doctorSchema.statics.verifyUser = function(users, body) {
     return object;
 }
 
-
-
 //                                                      T e k s  h i r i  s h
 
-doctorSchema.statics.verifyOfUser = function(users, token) {
-    var object = {isDoctor : false,  doctorId: undefined};
+nurseSchema.statics.verifyOfUser = function(users, token) {
+    var object = {isNurse : false,  NurseId: undefined};
     var distoken = undefined; 
 
     users.forEach((user) => {
@@ -75,10 +73,10 @@ doctorSchema.statics.verifyOfUser = function(users, token) {
         }
         if (distoken) {
             if(user.login == distoken.login && user.password == distoken.password ) {
-                    object.isDoctor = true;
+                    object.isNurse = true;
                     object.token = jwt.sign({login: user.login, password: user.password}, 'pro');
-                    object.doctorId = user._id;
-                    object.doctorName = user.fullName;
+                    object.NurseId = user._id;
+                    object.nurseName = user.fullName;
             }
         }
         else {
@@ -88,4 +86,4 @@ doctorSchema.statics.verifyOfUser = function(users, token) {
     return object;
 }
 
-module.exports = mongoose.model('doctors', doctorSchema);
+module.exports = mongoose.model('nurses', nurseSchema);

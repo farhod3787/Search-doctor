@@ -1,5 +1,5 @@
 const express = require('express');
-const Doctor = require('../moduls/doctor');
+const Nurse = require('../moduls/nurse');
 const Admin = require('../moduls/admin');
 
 const router = express.Router();
@@ -8,7 +8,7 @@ const router = express.Router();
 router.post('/', async function (request, response, next) {
     console.log("Post User");
    var body = request.body;
-    let doctor = {
+    let nurse = {
         fullName : body.fullName, 
         phone : body.phone,
         address : body.address,
@@ -19,23 +19,23 @@ router.post('/', async function (request, response, next) {
         practice: body.practice,
         rating: body.rating,        
         login : body.login,
-        password: await Doctor.hashofPassword(body.password),
+        password: await Nurse.hashofPassword(body.password),
     }
-        const doc = new Doctor(doctor);
-        let token = await Doctor.generateToken(doc.login, doc.password);
+        const doc = new Nurse(nurse);
+        let token = await Nurse.generateToken(doc.login, doc.password);
 
         doc.save().then( (res) =>{
         response.status(200).json({token: token})
     }).catch( err =>{
         console.log(err);
-        response.status(404).json({message: "Error in Saved doctor"})
+        response.status(404).json({message: "Error in Saved nurse"})
     })
 });
 
        
 router.get('/', (request, response, next) =>{
     var users = [];
-    Doctor.find().then( (all) =>{
+    Nurse.find().then( (all) =>{
         for (let i=all.length-1; i>=0; i--) {
             users.push(all[i]);
         }
@@ -43,7 +43,6 @@ router.get('/', (request, response, next) =>{
     }).catch(  (err)=>{
         console.log(err)
         response.status(400).json({message: "Error in Get All Users"});
-
     })
 });
 
@@ -52,7 +51,7 @@ router.get('/:id', async function(request, response) {
     var data = {};
     var id = request.params.id;
   
-    await Doctor.findById(id).then( (res)=>{
+    await Nurse.findById(id).then( (res)=>{
             if(!res) {
                 success = false;
                 data = "User not found"
@@ -78,11 +77,11 @@ router.delete('/:id/:token', async function (request, response, next ){
     var obj = Admin.verifyOfAdmin(users, token);
 
     if (obj.isAdmin) {
-        Doctor.findByIdAndDelete(id).then( res => {
+        Nurse.findByIdAndDelete(id).then( res => {
             if (!res) {
                   response.status(400).json({message: 'ID not found'})
             } else {
-                response.status(200).json({message: 'Doctor deleted'});
+                response.status(200).json({message: 'nurse deleted'});
             }
         });
             }
@@ -95,15 +94,15 @@ router.patch('/:id/:token', async function(request, response) {
     var id = request.params.id;
     let body = {};
     var token = request.params.token;
-    var doctors = await Doctor.find();
+    var nurses = await Nurse.find();
     var admins = await Admin.find();
     var obj = Admin.verifyOfAdmin(admins, token);
-    var object = Doctor.verifyOfUser(doctors, token);
-    if(obj.isAdmin || object.isDoctor) {  
-    Doctor.findById(id).then(res => {
+    var object = Nurse.verifyOfUser(nurses, token);
+    if(obj.isAdmin || object.isNurse) {  
+    Nurse.findById(id).then(res => {
         body = res;
         body.status = true;
-        Doctor.findByIdAndUpdate(id, { $set: body }, { new: true }).then(res => {
+        Nurse.findByIdAndUpdate(id, { $set: body }, { new: true }).then(res => {
             if (res) {
                 response.status(200).json({ message: "Status: True" })
             } else {
@@ -115,16 +114,16 @@ router.patch('/:id/:token', async function(request, response) {
         })
     })
 } else {
-    response.status(400).json({message: "This is not Doctor or Not Admin"})
+    response.status(400).json({message: "This is not nurse or Not Admin"})
 }
 })
 
 
 router.get('/verifyUser/:token', async function(request, response) {
      var token = request.params.token;
-        var users = await Doctor.find();
+        var users = await Nurse.find();
 
-    var obj = Doctor.verifyOfUser(users, token);
+    var obj = Nurse.verifyOfUser(users, token);
     response.status(200).json(obj);
  
 })
@@ -133,13 +132,13 @@ router.get('/verifyUser/:token', async function(request, response) {
 router.post('/sign', async function(request, response) {
     var body = request.body;
     var data = {}
-    var users = await Doctor.find();
+    var users = await Nurse.find();
     console.log(users);
-    var obj = Doctor.verifyUser(users, body);
+    var obj = Nurse.verifyUser(users, body);
 
-    if(obj.isDoctor) {
+    if(obj.isNurse) {
         data.token = obj.token;
-        data.isDoctor = obj.isUser;
+        data.isNurse = obj.isUser;
         response.status(200).json(obj)
     }
     else {
